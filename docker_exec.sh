@@ -1,34 +1,43 @@
 #!/usr/bin/bash
 
+# 選択関数
 function selector() {
-  menu=$1
-  select item in $menu; do
+  local menu=("$@") # 配列として引数を受け取る
+  select item in "${menu[@]}"; do
     if [ -n "${item}" ]; then
-      break
+      echo "${item}" # 選択された項目を出力
+      return
     else
-      echo "invalid selection."
-      echo "exit."
-      exit 0
+      echo "Invalid selection. Please try again."
+      return 1
     fi
   done
 }
 
-# コンテナ選択
+# Dockerが利用可能かチェック
+if ! type docker &>/dev/null; then
+  echo "Docker is not installed. Exiting."
+  exit 1
+fi
+
+# コンテナを選択
 PS3="Which container? > "
-menu="$(docker ps | tail -n +2 | rev | cut -d" " -f1 | rev)"
-item=""
-selector "$menu"
-container=$item
+mapfile -t containers < <(docker ps --format "{{.Names}}")
+if [ ${#containers[@]} -eq 0 ]; then
+  echo "No running containers found."
+  exit 1
+fi
+container=$(selector "${containers[@]}")
+if [ $? -ne 0 ]; then exit 1; fi
 
 # 改行
 echo ""
 
-# 起動コマンド選択
+# コマンドを選択
 PS3="Which command? > "
-menu='bash sh'
-item=""
-selector "$menu"
-command=$item
+commands=('bash' 'sh')
+command=$(selector "${commands[@]}")
+if [ $? -ne 0 ]; then exit 1; fi
 
 echo -e "Executing... 'docker exec -it ${container} ${command}'\n"
 
