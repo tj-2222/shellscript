@@ -14,14 +14,14 @@ fi
 
 # Dockerが利用可能かチェック
 if ! type docker &>/dev/null; then
-  echo "Docker is not installed. Exiting."
+  echo "Docker is not installed. Please install Docker."
   exit 1
 fi
 
 # 稼働中のDockerコンテナを選択
 containers=$(docker ps --format "{{.Names}}")
 if [ -z "$containers" ]; then
-  echo "No running containers found."
+  echo "No running containers found. Exiting."
   exit 1
 fi
 container=$(selector_with_peco $containers)
@@ -29,9 +29,6 @@ if [ -z "$container" ]; then
   echo "No container selected. Exiting."
   exit 1
 fi
-
-# 改行
-echo ""
 
 # 実行するコマンドを選択
 commands="bash sh"
