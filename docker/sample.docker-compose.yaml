@@ -1,0 +1,19 @@
+version: '3.8'
+
+services:
+  git-container:
+    container_name: git-container
+    build: 
+      context: .
+      dockerfile: git.Dockerfile
+    image: node-git
+    tty: true
+    stdin_open: true
+    init: true
+  nginx-container:
+    container_name: nginx-container
+    image: nginx:latest
+  nginx-container2:
+    container_name: nginx-container2
+    image: nginx:latest
+  
