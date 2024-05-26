@@ -3,7 +3,8 @@
 # pecoで選択肢をフィルタリングして選択する関数
 function selector_with_peco() {
   # 引数から入力リストを生成し、pecoで選択
-  echo "$@" | tr ' ' '\n' | peco
+  local input_list=("$@")
+  printf "%s\n" "${input_list[@]}" | peco
 }
 
 # pecoが利用可能かチェック
